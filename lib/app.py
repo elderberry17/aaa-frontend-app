@@ -19,7 +19,7 @@ def create_app() -> Application:
     # setup templates
     aiohttp_jinja2.setup(
         app=app,
-        loader=jinja2.FileSystemLoader(lib / "templates"),
+        loader=jinja2.FileSystemLoader(lib / "templates")
     )
     app["model"] = create_model()
     return app

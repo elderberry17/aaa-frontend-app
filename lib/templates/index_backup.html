@@ -31,7 +31,8 @@
 
     {% if error %}
     <div class="container col-6 mt-4 alert alert-danger">
-      {{ error }}
+      <h3 class="display-3">{{ error_title }}</h3>
+      <p>{{ error_text }}</p>
     </div>
     {% endif %}
 

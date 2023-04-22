@@ -2,7 +2,7 @@ from io import BufferedReader, BytesIO
 from base64 import b64encode
 from typing import List, Tuple
 
-from PIL import Image
+from PIL import Image, ImageFont
 from PIL.ImageDraw import Draw
 
 
@@ -11,13 +11,18 @@ Box = Tuple[int, int, int, int]  # PIL format
 
 
 def open_image(image_fp: BufferedReader) -> Image:
-    return Image.open(image_fp)
+    image = Image.open(image_fp).convert('RGB')
+    temp = BytesIO()
+    image.save(temp, format="jpeg")
+    image = Image.open(temp)
+    return image
 
 
 class PolygonDrawer:
-    def __init__(self, image: Image) -> None:
+    def __init__(self, image: Image, text_height=12) -> None:
         self._clean_image = image.copy()
         self._image = image
+        self._text_height = text_height
         self._draw = Draw(image)
 
     @staticmethod
@@ -25,13 +30,18 @@ class PolygonDrawer:
         """Convert EasyOCR coords to PIL box format"""
         return coords[0][0], coords[0][1], coords[2][0], coords[2][1]
 
-    def highlight_word(self, coords: Coords, word: str) -> None:
+    def highlight_word(self, coords: Coords, word: str, font=None) -> None:
         """Add polygon at given coords and add word"""
         box = self.coords_to_box(coords)
         self._draw.rectangle(box, outline="red")
-        text_height = 12  # px, hardcoded
+        # text_height = 12  # px, hardcoded
         x, y = box[:2]
-        self._draw.text((x, y - text_height), word, fill="red")
+        if font is None:
+            font = ImageFont.truetype("./appetite.ttf",
+                                      self._text_height,
+                                      encoding='UTF-8')
+        self._draw.text((x, y - self._text_height),
+                        word, font=font, fill="red")
 
     def crop(self, coords: Coords) -> Image:
         """Get cropped Image part"""
