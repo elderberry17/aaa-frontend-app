@@ -23,7 +23,7 @@ class IndexView(View):
                 cropped_img = draw.crop(coords)
                 cropped_img_b64 = image_to_img_src(cropped_img)
                 try:
-                    min_confidence = float(form["confidence"])/100
+                    min_confidence = float(form["confidence"]) / 100
                 except BaseException:
                     min_confidence = 0
 
